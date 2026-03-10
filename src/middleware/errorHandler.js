@@ -1,8 +1,9 @@
 // centralized error-handling middleware
-// should be added after all routes in server.js
+// should be added after all routes in app.js
 
 import logger from '../config/logger.js';
 
+// eslint-disable-next-line no-unused-vars -- Express requires 4-arg signature for error handlers
 export const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     let message = err.message || 'Internal Server Error';

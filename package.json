@@ -20,7 +20,9 @@
     "testMatch": [
       "**/tests/**/*.js"
     ],
-    "transform": {"^.+\\.js$": "babel-jest"}
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   },
   "keywords": [],
   "author": "",
@@ -41,6 +43,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
+    "@eslint/js": "^10.0.1",
     "babel-jest": "^30.2.0",
     "eslint": "^10.0.3",
     "jest": "^30.2.0",

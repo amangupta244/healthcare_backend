@@ -29,7 +29,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 
 // catch 404
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Not Found' });
 });
 

@@ -47,7 +47,10 @@ export const loginRules = [
 export const doctorCreateRules = [
     body('name').notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password')
+        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+        .matches(/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/)
+        .withMessage('Password must include uppercase, lowercase, and a number'),
     body('specialization').notEmpty().withMessage('Specialization is required'),
     body('experience').isNumeric().withMessage('Experience must be a number'),
     body('consultationFee').isNumeric().withMessage('Consultation fee must be a number')
