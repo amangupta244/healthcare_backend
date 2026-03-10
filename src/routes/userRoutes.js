@@ -1,9 +1,8 @@
 import express from 'express';
 const router = express.Router();
 import protect from '../middleware/authMiddleware.js';
+import { getProfile } from '../controllers/userController.js';
 
-router.get('/profile', protect, (req, res) => {
-    res.status(200).json({ message: `Welcome user ${req.user}, this is your profile.` });
-});
+router.get('/profile', protect, getProfile);
 
 export default router;

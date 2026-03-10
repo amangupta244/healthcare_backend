@@ -15,11 +15,11 @@ const doctorSchema = new mongoose.Schema({
     required: true,
   },
   experience: {
-    type: String,
+    type: Number,
     required: true
   },
   consultationFee: {
-    type: String,
+    type: Number,
     required: true
   },
   availability: [
@@ -32,6 +32,8 @@ const doctorSchema = new mongoose.Schema({
 },
   { timestamps: true }
 );
+
+doctorSchema.index({ userId: 1 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);
 
