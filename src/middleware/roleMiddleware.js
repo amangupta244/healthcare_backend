@@ -1,27 +1,22 @@
-import User from "../models/User.js";
+import logger from '../config/logger.js';
 
 const authorize = (...roles) => {
-    return async (req, res, next) => {
-        try {
-            // req.user is set by auth middleware and contains {id, role}
-            const userId = req.user && req.user.id;
-            const user = await User.findById(userId);
+    return (req, res, next) => {
+        // req.user is set by auth middleware after JWT verification; trust the role it carries.
+        const userRole = req.user && req.user.role;
 
-            if (!user) {
-                return res.status(401).json({ message: "User not found" });
-            }
-
-            if (!roles.includes(user.role)) {
-                return res.status(403).json({
-                    message: `User role ${user.role} is not authorized to access this route`
-                });
-            }
-
-            next();
-        } catch (error) {
-            console.error("Authorization error:", error);
-            res.status(500).json({ message: "Server error during authorization" });
+        if (!userRole) {
+            return res.status(401).json({ message: 'Not authorized' });
         }
+
+        if (!roles.includes(userRole)) {
+            logger.warn('Unauthorized access attempt: role %s tried to access route requiring %s', userRole, roles.join('/'));
+            return res.status(403).json({
+                message: `User role ${userRole} is not authorized to access this route`,
+            });
+        }
+
+        next();
     };
 };
 
