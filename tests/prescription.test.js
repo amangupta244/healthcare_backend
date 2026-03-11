@@ -44,15 +44,17 @@ describe('Prescription routes', () => {
     doctorId = doctor._id;
     doctorToken = jwt.sign({ id: docUser._id, role: docUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    // Create an appointment directly
-    let date = new Date();
-    while (date.getUTCDay() !== 1) date.setDate(date.getDate() + 1);
-    date.setUTCHours(10, 0, 0, 0);
+    // find next Monday at 10:00 UTC
+    let appointmentDate = new Date();
+    while (appointmentDate.getUTCDay() !== 1) {
+      appointmentDate.setDate(appointmentDate.getDate() + 1);
+    }
+    appointmentDate.setUTCHours(10, 0, 0, 0);
 
     const appointment = await Appointment.create({
       userId: patientId,
       doctorId,
-      date,
+      date: appointmentDate,
       status: 'completed',
       paymentStatus: 'paid'
     });
