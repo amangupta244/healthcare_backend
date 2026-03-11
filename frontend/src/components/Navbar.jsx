@@ -1,9 +1,11 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { getUserRole, isAuthenticated } from '../utils/auth';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem('token');
+  const authenticated = isAuthenticated();
+  const role = getUserRole();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -30,13 +32,19 @@ export default function Navbar() {
         {/* Links */}
         <div className="flex items-center gap-6 text-sm">
           <Link to="/doctors" className={isActive('/doctors')}>Doctors</Link>
-          {token && (
+          {authenticated && (
             <Link to="/appointments" className={isActive('/appointments')}>My Appointments</Link>
           )}
-          {token && (
+          {role === 'user' && (
+            <Link to="/prescriptions" className={isActive('/prescriptions')}>Prescriptions</Link>
+          )}
+          {role === 'admin' && (
+            <Link to="/admin/dashboard" className={isActive('/admin/dashboard')}>Dashboard</Link>
+          )}
+          {role === 'admin' && (
             <Link to="/create-doctor" className={isActive('/create-doctor')}>Add Doctor</Link>
           )}
-          {token ? (
+          {authenticated ? (
             <button
               onClick={handleLogout}
               className="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-4 py-1.5 rounded-lg transition text-sm"
