@@ -24,7 +24,7 @@ export const register = asyncHandler(async (req, res) => {
     });
 
     const token = jwt.sign(
-        { id: newUser._id, role: newUser.role },
+        { id: newUser._id, role: newUser.role, name: newUser.name },
         config.jwtSecret,
         { expiresIn: config.jwtExpiry }
     );
@@ -56,7 +56,7 @@ export const login = asyncHandler(async (req, res) => {
     }
 
     const token = jwt.sign(
-        { id: user._id, role: user.role },
+        { id: user._id, role: user.role, name: user.name },
         config.jwtSecret,
         { expiresIn: config.jwtExpiry }
     );
@@ -65,5 +65,11 @@ export const login = asyncHandler(async (req, res) => {
         success: true,
         message: 'Login successful',
         token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        },
     });
 });
