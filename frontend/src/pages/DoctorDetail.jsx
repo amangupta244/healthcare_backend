@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { getDoctorById } from '../services/doctorService';
+import { bookAppointment } from '../services/appointmentService';
+import MainLayout from '../layouts/MainLayout';
 
 export default function DoctorDetail() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ export default function DoctorDetail() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get(`/doctors/${id}`)
+    getDoctorById(id)
       .then(({ data }) => setDoctor(data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -30,7 +31,7 @@ export default function DoctorDetail() {
     setError('');
     setSuccess('');
     try {
-      await api.post('/appointments/book', { doctorId: id, ...form });
+      await bookAppointment({ doctorId: id, ...form });
       setSuccess('Appointment booked successfully!');
       setForm({ date: '', timeSlot: '' });
     } catch (err) {
@@ -42,30 +43,27 @@ export default function DoctorDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      <MainLayout>
         <div className="flex justify-center py-20">
           <svg className="animate-spin h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
           </svg>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   if (!doctor) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      <MainLayout>
         <div className="text-center py-20 text-gray-500">Doctor not found.</div>
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout>
       <main className="max-w-4xl mx-auto px-4 py-10">
         {/* Doctor Profile Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -170,6 +168,6 @@ export default function DoctorDetail() {
           </form>
         </div>
       </main>
-    </div>
+    </MainLayout>
   );
 }

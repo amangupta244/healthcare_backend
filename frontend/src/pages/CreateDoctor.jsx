@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { createDoctor } from '../services/doctorService';
+import MainLayout from '../layouts/MainLayout';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -31,7 +31,7 @@ export default function CreateDoctor() {
     setSuccess('');
     setLoading(true);
     try {
-      await api.post('/doctors/create', { ...form, availability });
+      await createDoctor({ ...form, availability });
       setSuccess('Doctor created successfully!');
       setTimeout(() => navigate('/doctors'), 1500);
     } catch (err) {
@@ -42,8 +42,7 @@ export default function CreateDoctor() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout>
       <main className="max-w-2xl mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-800">Add New Doctor</h1>
@@ -147,6 +146,6 @@ export default function CreateDoctor() {
           </form>
         </div>
       </main>
-    </div>
+    </MainLayout>
   );
 }

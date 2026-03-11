@@ -1,16 +1,9 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { getUserRole, isAuthenticated } from '../utils/auth';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar() {
-  const navigate = useNavigate();
   const location = useLocation();
-  const authenticated = isAuthenticated();
-  const role = getUserRole();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+  const { authenticated, role, logout } = useAuth();
 
   const isActive = (path) =>
     location.pathname === path
@@ -46,7 +39,7 @@ export default function Navbar() {
           )}
           {authenticated ? (
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-4 py-1.5 rounded-lg transition text-sm"
             >
               Logout
