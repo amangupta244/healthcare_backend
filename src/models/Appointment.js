@@ -20,13 +20,26 @@ const appointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'approved', 'cancelled'],
+        enum: ['pending', 'completed', 'cancelled'],
         default: 'pending'
     },
     paymentStatus: {
         type: String,
         enum: ['pending', 'paid', 'failed'],
         default: 'pending'
+    },
+    notes: {
+        type: String,
+        default: ''
+    },
+    isFollowUp: {
+        type: Boolean,
+        default: false
+    },
+    parentAppointmentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment',
+        default: null
     }
 }, { timestamps: true });
 

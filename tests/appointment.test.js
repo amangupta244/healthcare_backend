@@ -66,9 +66,9 @@ describe('Appointment routes', () => {
     const res = await request(app)
       .put(`/api/appointments/${appointmentId}/status`)
       .set('Authorization', `Bearer ${doctorToken}`)
-      .send({ status: 'approved' });
+      .send({ status: 'completed' });
     expect(res.statusCode).toBe(200);
-    expect(res.body.data.status).toBe('approved');
+    expect(res.body.data.status).toBe('completed');
   });
   test('doctor can view own appointments', async () => {
     const res = await request(app)

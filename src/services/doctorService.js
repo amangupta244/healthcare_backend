@@ -1,5 +1,6 @@
 import Doctor from '../models/Doctor.js';
 import User from '../models/User.js';
+import Appointment from '../models/Appointment.js';
 import bcrypt from 'bcryptjs';
 
 export async function createDoctor(data) {
@@ -67,4 +68,19 @@ export async function getDoctorById(id) {
         throw err;
     }
     return doctor;
+}
+export async function getDoctorByUserId(userId) {
+    const doctor = await Doctor.findOne({ userId }).populate('userId', 'name email');
+    if (!doctor) {
+        const err = new Error('Doctor profile not found');
+        err.statusCode = 404;
+        throw err;
+    }
+    return doctor;
+}
+
+export async function getDoctorPatients(doctorId) {
+    const patientIds = await Appointment.find({ doctorId }).distinct('userId');
+    const patients = await User.find({ _id: { $in: patientIds } }).select('-password');
+    return patients;
 }

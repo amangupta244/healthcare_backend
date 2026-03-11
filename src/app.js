@@ -10,6 +10,9 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import doctorRoutes from './routes/doctorRoutes.js';
 import appointmentRoutes from './routes/appointmentRoutes.js';
+import prescriptionRoutes from './routes/prescriptionRoutes.js';
+import patientRoutes from './routes/patientRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -27,6 +30,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/admin', adminRoutes);
 
 // catch 404
 app.use((req, res) => {

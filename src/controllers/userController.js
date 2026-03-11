@@ -9,3 +9,21 @@ export const getProfile = asyncHandler(async (req, res) => {
     }
     res.status(200).json({ success: true, user });
 });
+
+export const updateProfile = asyncHandler(async (req, res) => {
+    const { name, email } = req.body;
+    const updates = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+
+    const user = await User.findByIdAndUpdate(
+        req.user.id,
+        updates,
+        { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, user });
+});
