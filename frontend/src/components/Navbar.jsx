@@ -25,6 +25,12 @@ export default function Navbar() {
         {/* Links */}
         <div className="flex items-center gap-6 text-sm">
           <Link to="/doctors" className={isActive('/doctors')}>Doctors</Link>
+          {role === 'user' && (
+            <Link to="/patient/dashboard" className={isActive('/patient/dashboard')}>Dashboard</Link>
+          )}
+          {role === 'doctor' && (
+            <Link to="/doctor/dashboard" className={isActive('/doctor/dashboard')}>Dashboard</Link>
+          )}
           {authenticated && (
             <Link to="/appointments" className={isActive('/appointments')}>My Appointments</Link>
           )}

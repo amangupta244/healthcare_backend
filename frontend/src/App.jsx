@@ -6,6 +6,8 @@ import DoctorDetail from './pages/DoctorDetail';
 import AppointmentList from './pages/AppointmentList';
 import CreateDoctor from './pages/CreateDoctor';
 import AdminDashboard from './pages/AdminDashboard';
+import DoctorDashboard from './pages/DoctorDashboard';
+import PatientDashboard from './pages/PatientDashboard';
 import Prescriptions from './pages/Prescriptions';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -39,6 +41,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <CreateDoctor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patient/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['user']}>
+              <PatientDashboard />
             </ProtectedRoute>
           }
         />

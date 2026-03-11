@@ -3,13 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMyAppointments } from '../services/appointmentService';
 import MainLayout from '../layouts/MainLayout';
 import { formatDate } from '../utils/format';
-
-const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  confirmed: 'bg-green-100 text-green-800 border-green-200',
-  cancelled: 'bg-red-100 text-red-800 border-red-200',
-  completed: 'bg-blue-100 text-blue-800 border-blue-200',
-};
+import { statusColors } from '../utils/statusColors';
 
 export default function AppointmentList() {
   const navigate = useNavigate();
