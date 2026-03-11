@@ -3,6 +3,7 @@ import { getDashboardStats } from '../services/adminService';
 import { useFetch } from '../hooks/useFetch';
 import MainLayout from '../layouts/MainLayout';
 import StatCard from '../components/StatCard';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 
 export default function AdminDashboard() {
   const { data, loading, error } = useFetch(getDashboardStats, []);
@@ -17,12 +18,7 @@ export default function AdminDashboard() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <svg className="animate-spin h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-          </div>
+          <LoadingSkeleton type="stat" count={4} />
         ) : error ? (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-4 rounded-xl text-sm">{error}</div>
         ) : (
