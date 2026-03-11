@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
+import { getTokenPayload } from '../utils/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,11 @@ export default function Login() {
     try {
       const { data } = await login(form.email, form.password);
       localStorage.setItem('token', data.token);
-      navigate('/doctors');
+      const payload = getTokenPayload();
+      const role = payload?.role;
+      if (role === 'admin') navigate('/admin/dashboard');
+      else if (role === 'doctor') navigate('/doctor/dashboard');
+      else navigate('/patient/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

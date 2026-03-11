@@ -12,4 +12,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Interceptors run outside the React component tree so we cannot use
+      // useNavigate. A full-page redirect is intentional here: it clears
+      // all stale React state when the session expires.
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
