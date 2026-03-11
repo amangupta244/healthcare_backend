@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { getAllDoctors } from '../services/doctorService';
+import MainLayout from '../layouts/MainLayout';
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState([]);
@@ -9,7 +9,7 @@ export default function Doctors() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    api.get('/doctors')
+    getAllDoctors()
       .then(({ data }) => setDoctors(data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -22,9 +22,7 @@ export default function Doctors() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-
+    <MainLayout>
       <main className="max-w-6xl mx-auto px-4 py-10">
         {/* Hero */}
         <div className="text-center mb-10">
@@ -116,6 +114,6 @@ export default function Doctors() {
           </div>
         )}
       </main>
-    </div>
+    </MainLayout>
   );
 }

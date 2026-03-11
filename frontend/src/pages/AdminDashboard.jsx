@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { getDashboardStats } from '../services/adminService';
+import { useFetch } from '../hooks/useFetch';
+import MainLayout from '../layouts/MainLayout';
 
 function StatCard({ icon, label, value, color }) {
   return (
@@ -20,20 +20,11 @@ function StatCard({ icon, label, value, color }) {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    api.get('/admin/dashboard')
-      .then(({ data }) => setStats(data.data))
-      .catch(() => setError('Failed to load dashboard stats'))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error } = useFetch(getDashboardStats, []);
+  const stats = data?.data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout>
       <main className="max-w-6xl mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
@@ -122,6 +113,6 @@ export default function AdminDashboard() {
           </>
         )}
       </main>
-    </div>
+    </MainLayout>
   );
 }

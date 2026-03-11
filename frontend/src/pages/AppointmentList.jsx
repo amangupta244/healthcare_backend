@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { getMyAppointments } from '../services/appointmentService';
+import MainLayout from '../layouts/MainLayout';
 import { formatDate } from '../utils/format';
 
 const statusColors = {
@@ -22,7 +22,7 @@ export default function AppointmentList() {
       navigate('/login');
       return;
     }
-    api.get('/appointments/my-appointments')
+    getMyAppointments()
       .then(({ data }) => setAppointments(data.data || []))
       .catch((err) => {
         if (err.response?.status === 401) navigate('/login');
@@ -32,8 +32,7 @@ export default function AppointmentList() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout>
       <main className="max-w-4xl mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-800">My Appointments</h1>
@@ -105,6 +104,6 @@ export default function AppointmentList() {
           </div>
         )}
       </main>
-    </div>
+    </MainLayout>
   );
 }

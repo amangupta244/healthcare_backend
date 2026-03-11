@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
+import { getMyPrescriptions } from '../services/prescriptionService';
+import MainLayout from '../layouts/MainLayout';
 import { formatDate } from '../utils/format';
 
 export default function Prescriptions() {
@@ -11,7 +11,7 @@ export default function Prescriptions() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/prescriptions/my-prescriptions')
+    getMyPrescriptions()
       .then(({ data }) => setPrescriptions(data.data || []))
       .catch((err) => {
         if (err.response?.status === 401) navigate('/login');
@@ -21,8 +21,7 @@ export default function Prescriptions() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout>
       <main className="max-w-4xl mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-800">My Prescriptions</h1>
@@ -107,6 +106,6 @@ export default function Prescriptions() {
           </div>
         )}
       </main>
-    </div>
+    </MainLayout>
   );
 }
