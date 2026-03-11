@@ -68,3 +68,21 @@ export async function getDoctorById(id) {
     }
     return doctor;
 }
+export async function getDoctorByUserId(userId) {
+    const doctor = await Doctor.findOne({ userId }).populate('userId', 'name email');
+    if (!doctor) {
+        const err = new Error('Doctor profile not found');
+        err.statusCode = 404;
+        throw err;
+    }
+    return doctor;
+}
+
+export async function getDoctorPatients(doctorId) {
+    const Appointment = (await import('../models/Appointment.js')).default;
+    const User = (await import('../models/User.js')).default;
+
+    const appointments = await Appointment.find({ doctorId }).distinct('userId');
+    const patients = await User.find({ _id: { $in: appointments } }).select('-password');
+    return patients;
+}

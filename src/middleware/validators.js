@@ -27,7 +27,7 @@ export const bookAppointmentRules = [
 
 export const updateStatusRules = [
     param('id').isMongoId().withMessage('Appointment ID is invalid'),
-    body('status').isIn(['pending', 'approved', 'cancelled']).withMessage('Invalid status')
+    body('status').isIn(['pending', 'completed', 'cancelled']).withMessage('Invalid status')
 ];
 
 export const registerRules = [
@@ -69,4 +69,52 @@ export const idParamRules = [
     param('id').isMongoId().withMessage('ID must be a valid Mongo ID')
 ];
 
-// other rule sets can go here
+export const adminBookAppointmentRules = [
+    body('patientId').isMongoId().withMessage('patientId must be a valid ID'),
+    body('doctorId').isMongoId().withMessage('doctorId must be a valid ID'),
+    body('date').isISO8601().withMessage('date must be an ISO8601 string'),
+    body('time')
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+        .withMessage('time must be in HH:mm format')
+];
+
+export const followUpRules = [
+    body('parentAppointmentId').isMongoId().withMessage('parentAppointmentId must be a valid ID'),
+    body('doctorId').optional().isMongoId().withMessage('doctorId must be a valid ID'),
+    body('date').isISO8601().withMessage('date must be an ISO8601 string'),
+    body('time')
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+        .withMessage('time must be in HH:mm format')
+];
+
+export const notesRules = [
+    param('id').isMongoId().withMessage('Appointment ID is invalid'),
+    body('notes').notEmpty().withMessage('Notes cannot be empty')
+];
+
+export const prescriptionCreateRules = [
+    body('appointmentId').isMongoId().withMessage('appointmentId must be a valid ID'),
+    body('patientId').isMongoId().withMessage('patientId must be a valid ID'),
+    body('diagnosis').notEmpty().withMessage('Diagnosis is required'),
+    body('medicines').optional().isArray().withMessage('medicines must be an array'),
+    body('medicines.*.name').notEmpty().withMessage('Medicine name is required'),
+    body('medicines.*.dosage').notEmpty().withMessage('Dosage is required'),
+    body('medicines.*.frequency').notEmpty().withMessage('Frequency is required'),
+    body('medicines.*.duration').notEmpty().withMessage('Duration is required'),
+    body('notes').optional().isString(),
+    body('followUpDate').optional().isISO8601().withMessage('followUpDate must be an ISO8601 string')
+];
+
+export const addPatientRules = [
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('password')
+        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+        .matches(/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/)
+        .withMessage('Password must include uppercase, lowercase, and a number')
+];
+
+export const updateProfileRules = [
+    body('name').optional().notEmpty().withMessage('Name cannot be empty'),
+    body('email').optional().isEmail().withMessage('Valid email is required')
+];

@@ -1,14 +1,43 @@
 import express from 'express';
-import { bookAppointment, getMyAppointments, updateAppointmentStatus, getDoctorAppointments } from '../controllers/appointmentController.js';
+import {
+    bookAppointment,
+    getMyAppointments,
+    getAppointmentById,
+    updateAppointmentStatus,
+    addNotes,
+    getDoctorAppointments,
+    createFollowUp,
+    adminBookAppointment
+} from '../controllers/appointmentController.js';
 import protect from '../middleware/authMiddleware.js';
 import authorize from '../middleware/roleMiddleware.js';
-import { validate, bookAppointmentRules, updateStatusRules } from '../middleware/validators.js';
+import {
+    validate,
+    bookAppointmentRules,
+    updateStatusRules,
+    notesRules,
+    followUpRules,
+    adminBookAppointmentRules,
+    idParamRules
+} from '../middleware/validators.js';
 
 const router = express.Router();
 
+// Patient: book appointment
 router.post('/book', protect, validate(bookAppointmentRules), bookAppointment);
+
+// Patient: view own appointments (history + bills)
 router.get('/my-appointments', protect, getMyAppointments);
 
+// Doctor/Admin: view appointments for a specific doctor
+router.get(
+    '/doctor/:doctorId',
+    protect,
+    authorize('doctor', 'admin'),
+    getDoctorAppointments
+);
+
+// Doctor/Admin: update appointment status
 router.put(
     '/:id/status',
     protect,
@@ -17,11 +46,16 @@ router.put(
     updateAppointmentStatus
 );
 
-router.get(
-    '/doctor/:doctorId',
+// Doctor: add notes to an appointment
+router.put(
+    '/:id/notes',
     protect,
-    authorize('doctor', 'admin'),
-    getDoctorAppointments
+    authorize('doctor'),
+    validate(notesRules),
+    addNotes
 );
+
+// Get single appointment details
+router.get('/:id', protect, validate(idParamRules), getAppointmentById);
 
 export default router;
