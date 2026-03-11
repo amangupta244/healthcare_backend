@@ -3,19 +3,6 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import Navbar from '../components/Navbar';
 
-const specialtyColors = {
-  default: 'bg-blue-100 text-blue-800',
-  Cardiology: 'bg-red-100 text-red-800',
-  Neurology: 'bg-purple-100 text-purple-800',
-  Orthopedics: 'bg-orange-100 text-orange-800',
-  Pediatrics: 'bg-green-100 text-green-800',
-  Dermatology: 'bg-pink-100 text-pink-800',
-};
-
-function specialtyColor(spec) {
-  return specialtyColors[spec] || specialtyColors.default;
-}
-
 export default function Doctors() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
