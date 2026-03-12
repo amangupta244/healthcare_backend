@@ -9,6 +9,4 @@ const patientSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-patientSchema.index({ userId: 1 });
-
 export default mongoose.model('Patient', patientSchema);
