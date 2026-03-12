@@ -1,5 +1,7 @@
 import Appointment from '../models/Appointment.js';
 import Doctor from '../models/Doctor.js';
+import Patient from '../models/Patient.js';
+import FollowUp from '../models/FollowUp.js';
 
 export async function bookAppointment(userId, doctorId, date) {
     const doctor = await Doctor.findById(doctorId);
@@ -36,8 +38,14 @@ export async function bookAppointment(userId, doctorId, date) {
         throw err;
     }
 
+    let patient = await Patient.findOneAndUpdate(
+        { userId },
+        { userId },
+        { upsert: true, new: true }
+    );
+
     const newAppointment = await Appointment.create({
-        userId,
+        patientId: patient._id,
         doctorId,
         date,
         status: 'pending',
@@ -48,14 +56,16 @@ export async function bookAppointment(userId, doctorId, date) {
 }
 
 export async function getAppointmentsByUser(userId) {
-    return Appointment.find({ userId })
+    const patient = await Patient.findOne({ userId });
+    if (!patient) return [];
+    return Appointment.find({ patientId: patient._id })
         .populate('doctorId', 'name specialization consultationFee');
 }
 
 export async function getAppointmentById(id) {
     const appointment = await Appointment.findById(id)
         .populate('doctorId', 'name specialization consultationFee')
-        .populate('userId', 'name email');
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } });
     if (!appointment) {
         const err = new Error('Appointment not found');
         err.statusCode = 404;
@@ -96,41 +106,22 @@ export async function addNotes(id, notes) {
 
 export async function getAppointmentsByDoctor(doctorId) {
     return Appointment.find({ doctorId })
-        .populate('userId', 'name email')
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
         .sort({ date: -1 });
 }
 
-export async function createFollowUp(parentAppointmentId, doctorId, date) {
-    const parent = await Appointment.findById(parentAppointmentId);
-    if (!parent) {
-        const err = new Error('Parent appointment not found');
+export async function createFollowUp(appointmentId, date, notes) {
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+        const err = new Error('Appointment not found');
         err.statusCode = 404;
         throw err;
     }
 
-    const resolvedDoctorId = doctorId || parent.doctorId;
-    const doctor = await Doctor.findById(resolvedDoctorId);
-    if (!doctor) {
-        const err = new Error('Doctor not found');
-        err.statusCode = 404;
-        throw err;
-    }
-
-    const existingAppointment = await Appointment.findOne({ doctorId: resolvedDoctorId, date });
-    if (existingAppointment) {
-        const err = new Error('Doctor is not available at this time');
-        err.statusCode = 400;
-        throw err;
-    }
-
-    const followUp = await Appointment.create({
-        userId: parent.userId,
-        doctorId: resolvedDoctorId,
-        date,
-        status: 'pending',
-        paymentStatus: 'pending',
-        isFollowUp: true,
-        parentAppointmentId
+    const followUp = await FollowUp.create({
+        appointmentId,
+        date: new Date(date),
+        notes: notes || ''
     });
 
     return followUp;

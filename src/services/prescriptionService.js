@@ -1,6 +1,7 @@
 import Prescription from '../models/Prescription.js';
 import Appointment from '../models/Appointment.js';
 import Doctor from '../models/Doctor.js';
+import Patient from '../models/Patient.js';
 
 export async function createPrescription(doctorUserId, data) {
     const { appointmentId, patientId, diagnosis, notes, medicines, followUpDate } = data;
@@ -47,6 +48,12 @@ export async function getPrescriptionsByPatient(patientId) {
         .sort({ createdAt: -1 });
 }
 
+export async function getPrescriptionsByPatientUserId(userId) {
+    const patient = await Patient.findOne({ userId });
+    if (!patient) return [];
+    return getPrescriptionsByPatient(patient._id);
+}
+
 export async function getPrescriptionsByDoctor(doctorUserId) {
     const doctor = await Doctor.findOne({ userId: doctorUserId });
     if (!doctor) {
@@ -55,7 +62,7 @@ export async function getPrescriptionsByDoctor(doctorUserId) {
         throw err;
     }
     return Prescription.find({ doctorId: doctor._id })
-        .populate('patientId', 'name email')
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
         .populate('appointmentId', 'date status')
         .sort({ createdAt: -1 });
 }
@@ -63,7 +70,7 @@ export async function getPrescriptionsByDoctor(doctorUserId) {
 export async function getPrescriptionById(id) {
     const prescription = await Prescription.findById(id)
         .populate('doctorId', 'name specialization consultationFee')
-        .populate('patientId', 'name email')
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
         .populate('appointmentId', 'date status notes');
     if (!prescription) {
         const err = new Error('Prescription not found');
@@ -76,6 +83,6 @@ export async function getPrescriptionById(id) {
 export async function getPrescriptionByAppointment(appointmentId) {
     return Prescription.findOne({ appointmentId })
         .populate('doctorId', 'name specialization consultationFee')
-        .populate('patientId', 'name email')
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
         .populate('appointmentId', 'date status notes');
 }

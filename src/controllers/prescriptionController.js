@@ -12,7 +12,7 @@ export const createPrescription = asyncHandler(async (req, res) => {
 });
 
 export const getMyPrescriptions = asyncHandler(async (req, res) => {
-    const prescriptions = await prescriptionService.getPrescriptionsByPatient(req.user.id);
+    const prescriptions = await prescriptionService.getPrescriptionsByPatientUserId(req.user.id);
     res.status(200).json({
         success: true,
         count: prescriptions.length,
@@ -62,7 +62,7 @@ export const downloadPrescription = asyncHandler(async (req, res) => {
     const prescription = await prescriptionService.getPrescriptionById(id);
 
     const doctor = prescription.doctorId;
-    const patient = prescription.patientId;
+    const patientUser = prescription.patientId?.userId;
     const appointment = prescription.appointmentId;
 
     const medicinesHtml = prescription.medicines
@@ -106,8 +106,8 @@ export const downloadPrescription = asyncHandler(async (req, res) => {
   </div>
   <div class="section">
     <h3>Patient Information</h3>
-    <p><strong>Name:</strong> ${escapeHtml(patient.name)}</p>
-    <p><strong>Email:</strong> ${escapeHtml(patient.email)}</p>
+    <p><strong>Name:</strong> ${escapeHtml(patientUser?.name || 'N/A')}</p>
+    <p><strong>Email:</strong> ${escapeHtml(patientUser?.email || 'N/A')}</p>
   </div>
   <div class="section">
     <h3>Appointment</h3>

@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Patient from '../models/Patient.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import config from '../config/index.js';
@@ -22,6 +23,14 @@ export const register = asyncHandler(async (req, res) => {
         password: hashedPassword,
         role: 'user',
     });
+
+    // Auto-create a Patient profile for every registered user
+    try {
+        await Patient.create({ userId: newUser._id });
+    } catch {
+        await User.findByIdAndDelete(newUser._id);
+        return res.status(500).json({ success: false, message: 'Registration failed, please try again' });
+    }
 
     const token = jwt.sign(
         { id: newUser._id, role: newUser.role, name: newUser.name },

@@ -1,13 +1,14 @@
 import User from '../models/User.js';
+import Patient from '../models/Patient.js';
 import Appointment from '../models/Appointment.js';
 import bcrypt from 'bcryptjs';
 
 export async function getPatients() {
-    return User.find({ role: 'user' }).select('-password').sort({ createdAt: -1 });
+    return Patient.find().populate('userId', '-password').sort({ createdAt: -1 });
 }
 
 export async function getPatientById(id) {
-    const patient = await User.findOne({ _id: id, role: 'user' }).select('-password');
+    const patient = await Patient.findById(id).populate('userId', '-password');
     if (!patient) {
         const err = new Error('Patient not found');
         err.statusCode = 404;
@@ -29,30 +30,41 @@ export async function addPatient(data) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const patient = await User.create({
+    const newUser = await User.create({
         name,
         email,
         password: hashedPassword,
         role: 'user'
     });
 
+    let patient;
+    try {
+        patient = await Patient.create({ userId: newUser._id });
+    } catch (err) {
+        await User.findByIdAndDelete(newUser._id);
+        const createErr = new Error('Failed to create patient profile');
+        createErr.statusCode = 500;
+        throw createErr;
+    }
+
     return {
         id: patient._id,
-        name: patient.name,
-        email: patient.email,
-        role: patient.role,
+        userId: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
         createdAt: patient.createdAt
     };
 }
 
 export async function getPatientAppointments(patientId) {
-    const patient = await User.findOne({ _id: patientId, role: 'user' });
+    const patient = await Patient.findById(patientId);
     if (!patient) {
         const err = new Error('Patient not found');
         err.statusCode = 404;
         throw err;
     }
-    return Appointment.find({ userId: patientId })
+    return Appointment.find({ patientId })
         .populate('doctorId', 'name specialization consultationFee')
         .sort({ date: -1 });
 }

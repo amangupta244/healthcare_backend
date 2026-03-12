@@ -1,5 +1,6 @@
 import Doctor from '../models/Doctor.js';
 import User from '../models/User.js';
+import Patient from '../models/Patient.js';
 import Appointment from '../models/Appointment.js';
 import bcrypt from 'bcryptjs';
 
@@ -80,7 +81,7 @@ export async function getDoctorByUserId(userId) {
 }
 
 export async function getDoctorPatients(doctorId) {
-    const patientIds = await Appointment.find({ doctorId }).distinct('userId');
-    const patients = await User.find({ _id: { $in: patientIds } }).select('-password');
+    const patientIds = await Appointment.find({ doctorId }).distinct('patientId');
+    const patients = await Patient.find({ _id: { $in: patientIds } }).populate('userId', '-password');
     return patients;
 }
