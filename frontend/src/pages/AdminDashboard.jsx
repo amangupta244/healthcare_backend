@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getDashboardStats, getPatients } from '../services/adminService';
 import { useFetch } from '../hooks/useFetch';
 import MainLayout from '../layouts/MainLayout';
@@ -6,6 +6,7 @@ import StatCard from '../components/StatCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { data, loading, error } = useFetch(getDashboardStats, []);
   const { data: patientsData, loading: patientsLoading } = useFetch(getPatients, []);
   const stats = data?.data;
@@ -97,16 +98,16 @@ export default function AdminDashboard() {
                       </thead>
                       <tbody className="divide-y divide-gray-50">
                         {patients.map((patient) => (
-                          <tr key={patient._id} className="hover:bg-gray-50 transition-colors">
+                          <tr key={patient._id} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => navigate(`/patients/${patient._id}`)}>
                             <td className="py-3 px-6">
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-xs shrink-0">
-                                  {(patient.name || 'P').charAt(0)}
+                                  {(patient.userId?.name || 'P').charAt(0)}
                                 </div>
-                                <span className="text-sm font-medium text-gray-800">{patient.name}</span>
+                                <span className="text-sm font-medium text-gray-800">{patient.userId?.name}</span>
                               </div>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-600">{patient.email}</td>
+                            <td className="py-3 px-4 text-sm text-gray-600">{patient.userId?.email}</td>
                             <td className="py-3 px-4 text-sm text-gray-500">
                               {patient.createdAt
                                 ? new Date(patient.createdAt).toLocaleDateString('en-GB', {
@@ -124,13 +125,13 @@ export default function AdminDashboard() {
                   {/* Mobile list */}
                   <div className="md:hidden divide-y divide-gray-100 px-4 pb-4">
                     {patients.map((patient) => (
-                      <div key={patient._id} className="flex items-center gap-3 py-3">
+                      <div key={patient._id} className="flex items-center gap-3 py-3 cursor-pointer" onClick={() => navigate(`/patients/${patient._id}`)}>
                         <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm shrink-0">
-                          {(patient.name || 'P').charAt(0)}
+                          {(patient.userId?.name || 'P').charAt(0)}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{patient.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{patient.email}</p>
+                          <p className="text-sm font-medium text-gray-800 truncate">{patient.userId?.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{patient.userId?.email}</p>
                         </div>
                       </div>
                     ))}

@@ -8,6 +8,7 @@ import CreateDoctor from './pages/CreateDoctor';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
+import PatientDetail from './pages/PatientDetail';
 import Prescriptions from './pages/Prescriptions';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -57,6 +58,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['user']}>
               <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <PatientDetail />
             </ProtectedRoute>
           }
         />
