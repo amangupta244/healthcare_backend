@@ -5,7 +5,7 @@ import { getMyPrescriptions } from '../services/prescriptionService';
 import MainLayout from '../layouts/MainLayout';
 import StatCard from '../components/StatCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import { formatDate } from '../utils/format';
+import { formatDate, formatTime } from '../utils/format';
 import { getTokenPayload } from '../utils/auth';
 import { statusColors } from '../utils/statusColors';
 
@@ -147,7 +147,7 @@ export default function PatientDashboard() {
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm text-gray-600">{appt.date ? formatDate(appt.date) : '—'}</td>
-                              <td className="py-3 px-4 text-sm text-gray-600">{appt.timeSlot || '—'}</td>
+                              <td className="py-3 px-4 text-sm text-gray-600">{appt.date ? formatTime(appt.date) : '—'}</td>
                               <td className="py-3 px-4">
                                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColors[appt.status] || statusColors.pending}`}>
                                   {appt.status || 'pending'}
@@ -168,7 +168,7 @@ export default function PatientDashboard() {
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-gray-800 truncate">Dr. {appt.doctorId?.name || 'Unknown'}</p>
-                              <p className="text-xs text-gray-500">{appt.date ? formatDate(appt.date) : '—'}{appt.timeSlot ? ` · ${appt.timeSlot}` : ''}</p>
+                              <p className="text-xs text-gray-500">{appt.date ? formatDate(appt.date) : '—'}{appt.date ? ` · ${formatTime(appt.date)}` : ''}</p>
                             </div>
                           </div>
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 ${statusColors[appt.status] || statusColors.pending}`}>

@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getDoctorProfile } from '../services/doctorService';
 import { getDoctorAppointments } from '../services/appointmentService';
+import { getDoctorPrescriptions } from '../services/prescriptionService';
 import MainLayout from '../layouts/MainLayout';
 import StatCard from '../components/StatCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import { formatDate } from '../utils/format';
+import { formatDate, formatTime } from '../utils/format';
 import { statusColors } from '../utils/statusColors';
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -23,9 +25,15 @@ export default function DoctorDashboard() {
     getDoctorProfile()
       .then(({ data }) => {
         setProfile(data.data);
-        return getDoctorAppointments(data.data._id);
+        return Promise.all([
+          getDoctorAppointments(data.data._id),
+          getDoctorPrescriptions(),
+        ]);
       })
-      .then(({ data }) => setAppointments(data.data || []))
+      .then(([apptRes, rxRes]) => {
+        setAppointments(apptRes.data.data || []);
+        setPrescriptions(rxRes.data.data || []);
+      })
       .catch((err) => {
         if (err.response?.status === 401) navigate('/login');
         else setError('Failed to load dashboard data');
@@ -45,6 +53,7 @@ export default function DoctorDashboard() {
   );
 
   const recentAppointments = appointments.slice(0, 5);
+  const recentPrescriptions = prescriptions.slice(0, 3);
 
   return (
     <MainLayout>
@@ -109,22 +118,22 @@ export default function DoctorDashboard() {
                 }
               />
               <StatCard
-                label="Confirmed"
-                value={stats.confirmed}
-                color="bg-green-100"
-                icon={
-                  <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                }
-              />
-              <StatCard
                 label="Completed"
                 value={stats.completed}
                 color="bg-purple-100"
                 icon={
                   <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                }
+              />
+              <StatCard
+                label="Prescriptions"
+                value={prescriptions.length}
+                color="bg-green-100"
+                icon={
+                  <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 }
               />
@@ -173,7 +182,7 @@ export default function DoctorDashboard() {
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm text-gray-600">{appt.date ? formatDate(appt.date) : '—'}</td>
-                              <td className="py-3 px-4 text-sm text-gray-600">{appt.timeSlot || '—'}</td>
+                              <td className="py-3 px-4 text-sm text-gray-600">{appt.date ? formatTime(appt.date) : '—'}</td>
                               <td className="py-3 px-4">
                                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColors[appt.status] || statusColors.pending}`}>
                                   {appt.status || 'pending'}
@@ -194,7 +203,7 @@ export default function DoctorDashboard() {
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-gray-800 truncate">{appt.userId?.name || 'Patient'}</p>
-                              <p className="text-xs text-gray-500">{appt.date ? formatDate(appt.date) : '—'}{appt.timeSlot ? ` · ${appt.timeSlot}` : ''}</p>
+                              <p className="text-xs text-gray-500">{appt.date ? formatDate(appt.date) : '—'}{appt.date ? ` · ${formatTime(appt.date)}` : ''}</p>
                             </div>
                           </div>
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 ${statusColors[appt.status] || statusColors.pending}`}>
@@ -207,7 +216,7 @@ export default function DoctorDashboard() {
                 )}
               </div>
 
-              {/* Profile & Quick Actions */}
+              {/* Profile, Prescriptions & Quick Actions */}
               <div className="space-y-4">
                 {profile && (
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -228,6 +237,27 @@ export default function DoctorDashboard() {
                     </div>
                   </div>
                 )}
+
+                {/* Recent Prescriptions */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Prescriptions</h2>
+                  {recentPrescriptions.length === 0 ? (
+                    <p className="text-gray-400 text-sm">No prescriptions issued yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {recentPrescriptions.map((rx) => (
+                        <div key={rx._id} className="border border-gray-100 rounded-lg px-3 py-2.5">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {rx.patientId?.name || 'Patient'}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">{rx.diagnosis}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{formatDate(rx.createdAt)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <h2 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
                   <div className="flex flex-col gap-3">
@@ -238,7 +268,7 @@ export default function DoctorDashboard() {
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      My Appointments
+                      All Appointments
                     </Link>
                   </div>
                 </div>
@@ -250,3 +280,4 @@ export default function DoctorDashboard() {
     </MainLayout>
   );
 }
+
