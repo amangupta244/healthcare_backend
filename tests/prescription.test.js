@@ -127,4 +127,24 @@ describe('Prescription routes', () => {
     expect(res.headers['content-type']).toMatch(/text\/html/);
     expect(res.text).toContain('Prescription');
   });
+
+  test('patient can view prescriptions by patientId', async () => {
+    const res = await request(app)
+      .get(`/api/prescriptions/patient/${patientRecord._id}`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.count).toBeGreaterThan(0);
+  });
+
+  test('doctor can view prescription history by doctorId', async () => {
+    const res = await request(app)
+      .get(`/api/prescriptions/doctor/${doctorId}`)
+      .set('Authorization', `Bearer ${doctorToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.count).toBeGreaterThan(0);
+  });
 });

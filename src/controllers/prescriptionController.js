@@ -1,6 +1,7 @@
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import * as prescriptionService from '../services/prescriptionService.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
+import Patient from '../models/Patient.js';
 
 export const createPrescription = asyncHandler(async (req, res) => {
     const prescription = await prescriptionService.createPrescription(req.user.id, req.body);
@@ -22,6 +23,15 @@ export const getMyPrescriptions = asyncHandler(async (req, res) => {
 
 export const getPrescriptionsForPatient = asyncHandler(async (req, res) => {
     const { patientId } = req.params;
+
+    // If the requester is a patient ('user' role), verify they can only view their own prescriptions
+    if (req.user.role === 'user') {
+        const patient = await Patient.findOne({ userId: req.user.id });
+        if (!patient || patient._id.toString() !== patientId) {
+            return res.status(403).json({ success: false, message: 'Access denied' });
+        }
+    }
+
     const prescriptions = await prescriptionService.getPrescriptionsByPatient(patientId);
     res.status(200).json({
         success: true,
@@ -54,6 +64,16 @@ export const getByAppointment = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         data: prescription || null
+    });
+});
+
+export const getPrescriptionsForDoctor = asyncHandler(async (req, res) => {
+    const { doctorId } = req.params;
+    const prescriptions = await prescriptionService.getPrescriptionsByDoctorId(doctorId);
+    res.status(200).json({
+        success: true,
+        count: prescriptions.length,
+        data: prescriptions
     });
 });
 

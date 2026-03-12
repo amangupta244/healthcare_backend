@@ -86,3 +86,10 @@ export async function getPrescriptionByAppointment(appointmentId) {
         .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
         .populate('appointmentId', 'date status notes');
 }
+
+export async function getPrescriptionsByDoctorId(doctorId) {
+    return Prescription.find({ doctorId })
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
+        .populate('appointmentId', 'date status notes')
+        .sort({ createdAt: -1 });
+}
