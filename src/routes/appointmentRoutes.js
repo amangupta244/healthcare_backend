@@ -6,8 +6,7 @@ import {
     updateAppointmentStatus,
     addNotes,
     getDoctorAppointments,
-    createFollowUp,
-    adminBookAppointment
+    createFollowUp
 } from '../controllers/appointmentController.js';
 import protect from '../middleware/authMiddleware.js';
 import authorize from '../middleware/roleMiddleware.js';
@@ -17,7 +16,6 @@ import {
     updateStatusRules,
     notesRules,
     followUpRules,
-    adminBookAppointmentRules,
     idParamRules
 } from '../middleware/validators.js';
 
@@ -35,6 +33,15 @@ router.get(
     protect,
     authorize('doctor', 'admin'),
     getDoctorAppointments
+);
+
+// Doctor/Admin: create a follow-up appointment
+router.post(
+    '/follow-up',
+    protect,
+    authorize('doctor', 'admin'),
+    validate(followUpRules),
+    createFollowUp
 );
 
 // Doctor/Admin: update appointment status

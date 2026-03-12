@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { getDashboardStats } from '../services/adminService';
+import { getDashboardStats, getPatients } from '../services/adminService';
 import { useFetch } from '../hooks/useFetch';
 import MainLayout from '../layouts/MainLayout';
 import StatCard from '../components/StatCard';
@@ -7,7 +7,9 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 
 export default function AdminDashboard() {
   const { data, loading, error } = useFetch(getDashboardStats, []);
+  const { data: patientsData, loading: patientsLoading } = useFetch(getPatients, []);
   const stats = data?.data;
+  const patients = patientsData?.data || [];
 
   return (
     <MainLayout>
@@ -67,6 +69,76 @@ export default function AdminDashboard() {
               />
             </div>
 
+            {/* Patient List */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+              <div className="px-6 pt-6 pb-4">
+                <h2 className="text-lg font-semibold text-gray-800">Registered Patients</h2>
+                <p className="text-sm text-gray-500 mt-0.5">All patients registered on the platform</p>
+              </div>
+              {patientsLoading ? (
+                <div className="px-6 pb-6">
+                  <LoadingSkeleton type="row" count={4} />
+                </div>
+              ) : patients.length === 0 ? (
+                <div className="text-center py-10 px-6">
+                  <p className="text-gray-400 text-sm">No patients registered yet</p>
+                </div>
+              ) : (
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-y border-gray-100 bg-gray-50">
+                          <th className="text-left py-2.5 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
+                          <th className="text-left py-2.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</th>
+                          <th className="text-left py-2.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Registered</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {patients.map((patient) => (
+                          <tr key={patient._id} className="hover:bg-gray-50 transition-colors">
+                            <td className="py-3 px-6">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-xs shrink-0">
+                                  {(patient.name || 'P').charAt(0)}
+                                </div>
+                                <span className="text-sm font-medium text-gray-800">{patient.name}</span>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-sm text-gray-600">{patient.email}</td>
+                            <td className="py-3 px-4 text-sm text-gray-500">
+                              {patient.createdAt
+                                ? new Date(patient.createdAt).toLocaleDateString('en-GB', {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    year: 'numeric',
+                                  })
+                                : '—'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Mobile list */}
+                  <div className="md:hidden divide-y divide-gray-100 px-4 pb-4">
+                    {patients.map((patient) => (
+                      <div key={patient._id} className="flex items-center gap-3 py-3">
+                        <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm shrink-0">
+                          {(patient.name || 'P').charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{patient.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{patient.email}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
@@ -97,3 +169,4 @@ export default function AdminDashboard() {
     </MainLayout>
   );
 }
+

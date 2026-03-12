@@ -1,5 +1,6 @@
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import * as prescriptionService from '../services/prescriptionService.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
 
 export const createPrescription = asyncHandler(async (req, res) => {
     const prescription = await prescriptionService.createPrescription(req.user.id, req.body);
@@ -68,10 +69,10 @@ export const downloadPrescription = asyncHandler(async (req, res) => {
         .map(
             (m) =>
                 `<tr>
-          <td>${m.name}</td>
-          <td>${m.dosage}</td>
-          <td>${m.frequency}</td>
-          <td>${m.duration}</td>
+          <td>${escapeHtml(m.name)}</td>
+          <td>${escapeHtml(m.dosage)}</td>
+          <td>${escapeHtml(m.frequency)}</td>
+          <td>${escapeHtml(m.duration)}</td>
         </tr>`
         )
         .join('');
@@ -96,28 +97,28 @@ export const downloadPrescription = asyncHandler(async (req, res) => {
 <body>
   <div class="header">
     <h1>Healthcare Prescription</h1>
-    <p><strong>Date:</strong> ${new Date(prescription.createdAt).toDateString()}</p>
+    <p><strong>Date:</strong> ${escapeHtml(new Date(prescription.createdAt).toDateString())}</p>
   </div>
   <div class="section">
     <h3>Doctor Information</h3>
-    <p><strong>Name:</strong> ${doctor.name}</p>
-    <p><strong>Specialization:</strong> ${doctor.specialization}</p>
+    <p><strong>Name:</strong> ${escapeHtml(doctor.name)}</p>
+    <p><strong>Specialization:</strong> ${escapeHtml(doctor.specialization)}</p>
   </div>
   <div class="section">
     <h3>Patient Information</h3>
-    <p><strong>Name:</strong> ${patient.name}</p>
-    <p><strong>Email:</strong> ${patient.email}</p>
+    <p><strong>Name:</strong> ${escapeHtml(patient.name)}</p>
+    <p><strong>Email:</strong> ${escapeHtml(patient.email)}</p>
   </div>
   <div class="section">
     <h3>Appointment</h3>
-    <p><strong>Date:</strong> ${appointment ? new Date(appointment.date).toDateString() : 'N/A'}</p>
-    <p><strong>Status:</strong> ${appointment ? appointment.status : 'N/A'}</p>
+    <p><strong>Date:</strong> ${appointment ? escapeHtml(new Date(appointment.date).toDateString()) : 'N/A'}</p>
+    <p><strong>Status:</strong> ${appointment ? escapeHtml(appointment.status) : 'N/A'}</p>
   </div>
   <div class="section">
     <h3>Diagnosis</h3>
-    <p>${prescription.diagnosis}</p>
+    <p>${escapeHtml(prescription.diagnosis)}</p>
   </div>
-  ${prescription.notes ? `<div class="section"><h3>Notes</h3><p>${prescription.notes}</p></div>` : ''}
+  ${prescription.notes ? `<div class="section"><h3>Notes</h3><p>${escapeHtml(prescription.notes)}</p></div>` : ''}
   ${
       prescription.medicines.length > 0
           ? `<div class="section">
@@ -131,7 +132,7 @@ export const downloadPrescription = asyncHandler(async (req, res) => {
   </div>`
           : ''
   }
-  ${prescription.followUpDate ? `<div class="section"><h3>Follow-up Date</h3><p>${new Date(prescription.followUpDate).toDateString()}</p></div>` : ''}
+  ${prescription.followUpDate ? `<div class="section"><h3>Follow-up Date</h3><p>${escapeHtml(new Date(prescription.followUpDate).toDateString())}</p></div>` : ''}
   <div class="footer">
     <p>This prescription is computer-generated and valid without a physical signature.</p>
     <button onclick="window.print()">Print / Download</button>
