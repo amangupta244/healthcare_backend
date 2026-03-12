@@ -132,6 +132,8 @@ export async function createFollowUp(appointmentId, date, notes) {
 
     const followUp = await FollowUp.create({
         appointmentId,
+        patientId: appointment.patientId,
+        doctorId: appointment.doctorId,
         date: new Date(date),
         notes: notes || ''
     });

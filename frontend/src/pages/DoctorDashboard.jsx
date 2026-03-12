@@ -176,9 +176,9 @@ export default function DoctorDashboard() {
                               <td className="py-3 px-6">
                                 <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-xs shrink-0">
-                                    {(appt.userId?.name || 'P').charAt(0)}
+                                    {(appt.patientId?.userId?.name || 'P').charAt(0)}
                                   </div>
-                                  <span className="text-sm font-medium text-gray-800">{appt.userId?.name || 'Patient'}</span>
+                                  <span className="text-sm font-medium text-gray-800">{appt.patientId?.userId?.name || 'Patient'}</span>
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm text-gray-600">{appt.date ? formatDate(appt.date) : '—'}</td>
@@ -199,10 +199,10 @@ export default function DoctorDashboard() {
                         <div key={appt._id} className="flex items-center justify-between py-3 gap-3">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-xs shrink-0">
-                              {(appt.userId?.name || 'P').charAt(0)}
+                              {(appt.patientId?.userId?.name || 'P').charAt(0)}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-800 truncate">{appt.userId?.name || 'Patient'}</p>
+                              <p className="text-sm font-medium text-gray-800 truncate">{appt.patientId?.userId?.name || 'Patient'}</p>
                               <p className="text-xs text-gray-500">{appt.date ? formatDate(appt.date) : '—'}{appt.date ? ` · ${formatTime(appt.date)}` : ''}</p>
                             </div>
                           </div>

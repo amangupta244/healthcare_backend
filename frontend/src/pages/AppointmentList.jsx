@@ -101,12 +101,12 @@ export default function AppointmentList() {
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm shrink-0">
                             {isDoctor
-                              ? (appt.userId?.name || 'P').charAt(0)
+                              ? (appt.patientId?.userId?.name || 'P').charAt(0)
                               : (appt.doctorId?.name || 'D').charAt(0)}
                           </div>
                           <span className="text-sm font-medium text-gray-800">
                             {isDoctor
-                              ? (appt.userId?.name || 'Unknown Patient')
+                              ? (appt.patientId?.userId?.name || 'Unknown Patient')
                               : `Dr. ${appt.doctorId?.name || 'Unknown Doctor'}`}
                           </span>
                         </div>
@@ -154,13 +154,13 @@ export default function AppointmentList() {
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold shrink-0">
                         {isDoctor
-                          ? (appt.userId?.name || 'P').charAt(0)
+                          ? (appt.patientId?.userId?.name || 'P').charAt(0)
                           : (appt.doctorId?.name || 'D').charAt(0)}
                       </div>
                       <div className="min-w-0">
                         <p className="font-semibold text-gray-800 text-sm truncate">
                           {isDoctor
-                            ? (appt.userId?.name || 'Unknown Patient')
+                            ? (appt.patientId?.userId?.name || 'Unknown Patient')
                             : `Dr. ${appt.doctorId?.name || 'Unknown Doctor'}`}
                         </p>
                         {!isDoctor && (
