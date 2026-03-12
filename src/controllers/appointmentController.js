@@ -82,17 +82,16 @@ export const getDoctorAppointments = asyncHandler(async (req, res) => {
     });
 });
 
-// Create follow-up appointment (Doctor/Admin)
+// Create follow-up (Doctor/Admin)
 export const createFollowUp = asyncHandler(async (req, res) => {
-    const { parentAppointmentId, doctorId, date, time } = req.body;
-    const dateTime = new Date(`${date}T${time}:00Z`);
+    const { appointmentId, date, notes } = req.body;
 
-    const followUp = await appointmentService.createFollowUp(parentAppointmentId, doctorId, dateTime);
+    const followUp = await appointmentService.createFollowUp(appointmentId, date, notes);
 
     res.status(201).json({
         success: true,
-        message: 'Follow-up appointment created',
-        appointment: followUp
+        message: 'Follow-up created',
+        data: followUp
     });
 });
 

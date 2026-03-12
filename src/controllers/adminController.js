@@ -1,12 +1,12 @@
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import User from '../models/User.js';
+import Patient from '../models/Patient.js';
 import Doctor from '../models/Doctor.js';
 import Appointment from '../models/Appointment.js';
 
 export const getDashboardStats = asyncHandler(async (req, res) => {
     const [doctorCount, patientCount, appointmentCount, pendingCount] = await Promise.all([
         Doctor.countDocuments(),
-        User.countDocuments({ role: 'user' }),
+        Patient.countDocuments(),
         Appointment.countDocuments(),
         Appointment.countDocuments({ status: 'pending' })
     ]);

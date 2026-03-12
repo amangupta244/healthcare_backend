@@ -79,12 +79,9 @@ export const adminBookAppointmentRules = [
 ];
 
 export const followUpRules = [
-    body('parentAppointmentId').isMongoId().withMessage('parentAppointmentId must be a valid ID'),
-    body('doctorId').optional().isMongoId().withMessage('doctorId must be a valid ID'),
+    body('appointmentId').isMongoId().withMessage('appointmentId must be a valid ID'),
     body('date').isISO8601().withMessage('date must be an ISO8601 string'),
-    body('time')
-        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
-        .withMessage('time must be in HH:mm format')
+    body('notes').optional().isString().withMessage('notes must be a string')
 ];
 
 export const notesRules = [

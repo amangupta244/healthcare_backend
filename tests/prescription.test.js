@@ -3,11 +3,12 @@ import app from '../src/app.js';
 import mongoose from 'mongoose';
 import User from '../src/models/User.js';
 import Doctor from '../src/models/Doctor.js';
+import Patient from '../src/models/Patient.js';
 import Appointment from '../src/models/Appointment.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-let doctorToken, patientToken, doctorId, patientId, appointmentId, prescriptionId;
+let doctorToken, patientToken, doctorId, patientId, patientRecord, appointmentId, prescriptionId;
 
 describe('Prescription routes', () => {
   beforeAll(async () => {
@@ -16,7 +17,7 @@ describe('Prescription routes', () => {
 
     const salt = await bcrypt.genSalt(10);
 
-    // Create patient
+    // Create patient user and patient profile
     const patient = await User.create({
       name: 'Patient Test',
       email: 'patient@example.com',
@@ -24,6 +25,7 @@ describe('Prescription routes', () => {
       role: 'user'
     });
     patientId = patient._id;
+    patientRecord = await Patient.create({ userId: patient._id });
     patientToken = jwt.sign({ id: patient._id, role: patient.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Create doctor user + doctor profile
@@ -52,7 +54,7 @@ describe('Prescription routes', () => {
     appointmentDate.setUTCHours(10, 0, 0, 0);
 
     const appointment = await Appointment.create({
-      userId: patientId,
+      patientId: patientRecord._id,
       doctorId,
       date: appointmentDate,
       status: 'completed',
@@ -72,7 +74,7 @@ describe('Prescription routes', () => {
       .set('Authorization', `Bearer ${doctorToken}`)
       .send({
         appointmentId: appointmentId.toString(),
-        patientId: patientId.toString(),
+        patientId: patientRecord._id.toString(),
         diagnosis: 'Common cold',
         notes: 'Rest well',
         medicines: [

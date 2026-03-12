@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const appointmentSchema = new mongoose.Schema({
-    userId: {
+    patientId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Patient',
         required: true,
         index: true
     },
@@ -31,15 +31,6 @@ const appointmentSchema = new mongoose.Schema({
     notes: {
         type: String,
         default: ''
-    },
-    isFollowUp: {
-        type: Boolean,
-        default: false
-    },
-    parentAppointmentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Appointment',
-        default: null
     }
 }, { timestamps: true });
 
