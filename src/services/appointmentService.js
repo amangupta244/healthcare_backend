@@ -110,6 +110,18 @@ export async function getAppointmentsByDoctor(doctorId) {
         .sort({ date: -1 });
 }
 
+export async function getCompletedAppointmentsByDoctor(doctorId) {
+    return Appointment.find({ doctorId, status: 'completed' })
+        .populate({ path: 'patientId', populate: { path: 'userId', select: 'name email' } })
+        .sort({ date: -1 });
+}
+
+export async function getAppointmentsByPatientId(patientId) {
+    return Appointment.find({ patientId })
+        .populate('doctorId', 'name specialization consultationFee')
+        .sort({ date: -1 });
+}
+
 export async function createFollowUp(appointmentId, date, notes) {
     const appointment = await Appointment.findById(appointmentId);
     if (!appointment) {

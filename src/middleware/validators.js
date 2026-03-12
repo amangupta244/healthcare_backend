@@ -69,6 +69,14 @@ export const idParamRules = [
     param('id').isMongoId().withMessage('ID must be a valid Mongo ID')
 ];
 
+export const doctorIdParamRules = [
+    param('doctorId').isMongoId().withMessage('doctorId must be a valid Mongo ID')
+];
+
+export const patientIdParamRules = [
+    param('patientId').isMongoId().withMessage('patientId must be a valid Mongo ID')
+];
+
 export const adminBookAppointmentRules = [
     body('patientId').isMongoId().withMessage('patientId must be a valid ID'),
     body('doctorId').isMongoId().withMessage('doctorId must be a valid ID'),

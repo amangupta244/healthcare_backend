@@ -82,6 +82,32 @@ export const getDoctorAppointments = asyncHandler(async (req, res) => {
     });
 });
 
+// Get Doctor's completed appointment history
+export const getDoctorAppointmentHistory = asyncHandler(async (req, res) => {
+    const { doctorId } = req.params;
+
+    const appointments = await appointmentService.getCompletedAppointmentsByDoctor(doctorId);
+
+    res.status(200).json({
+        success: true,
+        count: appointments.length,
+        data: appointments
+    });
+});
+
+// Get Patient's Appointments by patientId
+export const getPatientAppointments = asyncHandler(async (req, res) => {
+    const { patientId } = req.params;
+
+    const appointments = await appointmentService.getAppointmentsByPatientId(patientId);
+
+    res.status(200).json({
+        success: true,
+        count: appointments.length,
+        data: appointments
+    });
+});
+
 // Create follow-up (Doctor/Admin)
 export const createFollowUp = asyncHandler(async (req, res) => {
     const { appointmentId, date, notes } = req.body;

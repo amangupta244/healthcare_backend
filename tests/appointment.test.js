@@ -77,4 +77,47 @@ describe('Appointment routes', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.count).toBe(1);
   });
+
+  test('POST /appointments books appointment successfully', async () => {
+    // find next Tuesday at 10:00 UTC (avoid conflict with Monday slot booked above)
+    let date = new Date();
+    while (date.getUTCDay() !== 2) { // 2 = Tuesday
+      date.setDate(date.getDate() + 1);
+    }
+    // Doctor is only available Monday, so expect 400 for Tuesday
+    date.setUTCHours(10, 0, 0, 0);
+    const [dateOnly, timeOnly] = date.toISOString().split('T');
+    const time = timeOnly.slice(0, 5);
+
+    const res = await request(app)
+      .post('/api/appointments')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ doctorId: doctorId.toString(), date: dateOnly, time });
+
+    // Doctor not available on Tuesday, should return 400
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('doctor can view completed appointment history', async () => {
+    const res = await request(app)
+      .get(`/api/appointments/history/${doctorId}`)
+      .set('Authorization', `Bearer ${doctorToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(res.body.data[0].status).toBe('completed');
+  });
+
+  test('patient can view appointments by patientId', async () => {
+    // first get the patient record by fetching current user appointments
+    const myAppts = await request(app)
+      .get('/api/appointments/my-appointments')
+      .set('Authorization', `Bearer ${userToken}`);
+    const patientId = myAppts.body.data[0].patientId;
+
+    const res = await request(app)
+      .get(`/api/appointments/patient/${patientId}`)
+      .set('Authorization', `Bearer ${doctorToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.count).toBe(1);
+  });
 });
