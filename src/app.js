@@ -13,6 +13,7 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
 import patientRoutes from './routes/patientRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import followupRoutes from './routes/followupRoutes.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -33,6 +34,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/followups', followupRoutes);
 
 // catch 404
 app.use((req, res) => {
